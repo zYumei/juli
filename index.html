@@ -127,30 +127,47 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtener la ruta base de la URL actual
-            const baseURL = window.location.pathname.split('/').slice(0, -1).join('/') + '/';
-            console.log("Ruta base:", baseURL);
+            // Información de depuración
+            console.log("URL actual:", window.location.href);
+            console.log("Hostname:", window.location.hostname);
+            console.log("Pathname:", window.location.pathname);
             
-            // Para GitHub Pages, ajustamos las rutas según la estructura del repositorio
+            // Determinar URL base según el entorno
+            let baseImageURL = '';
+            
+            // Si estamos en GitHub Pages
+            if (window.location.hostname.includes('github.io')) {
+                // Obtener el nombre de usuario y el repositorio de la URL
+                const pathParts = window.location.pathname.split('/').filter(part => part);
+                
+                if (pathParts.length >= 1) {
+                    // En GitHub Pages, el formato es /nombre-repo/ o /nombre-usuario/nombre-repo/
+                    baseImageURL = '/' + pathParts.join('/') + '/';
+                }
+            }
+            
+            console.log("URL base detectada:", baseImageURL);
+            
+            // Lista de recuerdos con rutas corregidas
             const recuerdos = [
                 {
-                    imagen: "foto_mac.jpg",
+                    imagen: baseImageURL + "foto_mac.jpg",
                     mensaje: "Nuestra primer foto juntos y en la primer salida donde te di un beso"
                 },
                 {
-                    imagen: "manitos.jpg",
+                    imagen: baseImageURL + "manitos.jpg",
                     mensaje: "Nuestras manitos juntas por primera vez"
                 },
                 {
-                    imagen: "mano_mordida.jpg",
+                    imagen: baseImageURL + "mano_mordida.jpg",
                     mensaje: "Vos y tus marquitas de amor que tanto me gustan"
                 },
                 {
-                    imagen: "pulsera.jpg",
+                    imagen: baseImageURL + "pulsera.jpg",
                     mensaje: "La mejor pulsera que me regalaste, la que me acompaña siempre"
                 },
                 {
-                    imagen: "ultima_foto.jpg",
+                    imagen: baseImageURL + "ultima_foto.jpg",
                     mensaje: "Nuestra última foto juntos, pero no la última que nos vamos a sacar"
                 }
             ];
@@ -176,18 +193,33 @@
             galleryImage.onload = function() {
                 loadingIndicator.style.display = 'none';
                 galleryImage.style.display = 'block';
+                console.log("Imagen cargada exitosamente:", galleryImage.src);
             };
             
             galleryImage.onerror = function() {
-                loadingIndicator.textContent = "Error al cargar la imagen. Verificando ruta...";
+                loadingIndicator.textContent = "Error al cargar la imagen. Probando rutas alternativas...";
                 console.error("Error al cargar:", galleryImage.src);
-                // Intentar registrar posibles rutas para ayudar a depurar
-                console.log("Intentando rutas alternativas:");
-                console.log("1. Directa:", recuerdos[currentIndex].imagen);
-                console.log("2. Con ruta base:", baseURL + recuerdos[currentIndex].imagen);
+                
+                // Intentar con rutas alternativas
+                const imageName = recuerdos[currentIndex].imagen.split('/').pop();
+                
+                // Probar con ruta absoluta en GitHub Pages
+                if (window.location.hostname.includes('github.io')) {
+                    const username = window.location.hostname.split('.')[0];
+                    const repoName = window.location.pathname.split('/')[1];
+                    const absoluteURL = `https://${username}.github.io/${repoName}/${imageName}`;
+                    
+                    console.log("Intentando con URL absoluta:", absoluteURL);
+                    galleryImage.src = absoluteURL;
+                } else {
+                    // Probar con ruta directa si estamos en local
+                    console.log("Intentando con ruta directa:", imageName);
+                    galleryImage.src = imageName;
+                }
             };
 
-            const backgroundMusic = new Audio('musica_fondo.mp3');
+            // Configurar el audio con manejo de errores
+            const backgroundMusic = new Audio(baseImageURL + 'musica_fondo.mp3');
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.5;
             
@@ -200,7 +232,21 @@
             
             backgroundMusic.addEventListener('error', function(e) {
                 console.error("Error al cargar la música:", e);
-                musicButton.textContent = 'Error de música';
+                // Intentar con ruta alternativa para la música
+                const musicName = 'musica_fondo.mp3';
+                
+                if (window.location.hostname.includes('github.io')) {
+                    const username = window.location.hostname.split('.')[0];
+                    const repoName = window.location.pathname.split('/')[1];
+                    const absoluteMusicURL = `https://${username}.github.io/${repoName}/${musicName}`;
+                    
+                    console.log("Intentando cargar música desde:", absoluteMusicURL);
+                    backgroundMusic.src = absoluteMusicURL;
+                } else {
+                    backgroundMusic.src = musicName;
+                }
+                
+                musicButton.textContent = 'Reintentar música';
             });
 
             function loadImage() {
@@ -213,11 +259,8 @@
                     loadingIndicator.style.display = 'block';
                     galleryImage.style.display = 'none';
                     
-                    // Usar la ruta directa de la imagen
+                    console.log("Cargando imagen:", item.imagen);
                     galleryImage.src = item.imagen;
-                    
-                    // También probamos con console.log para depuración
-                    console.log("Cargando imagen:", galleryImage.src);
                     
                     galleryImage.style.opacity = 0;
                     setTimeout(() => {
@@ -342,10 +385,6 @@
             // Comenzar cargando la primera imagen con un pequeño retraso
             // para asegurar que todo está listo
             setTimeout(loadImage, 300);
-            
-            // Logs de depuración iniciales
-            console.log("Imágenes en la galería:", recuerdos.length);
-            console.log("Primera imagen:", recuerdos[0].imagen);
         });
     </script>
 </body>
