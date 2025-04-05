@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff4757 100%);
             background-attachment: fixed;
             display: flex;
             flex-direction: column;
@@ -24,13 +24,13 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(255, 231, 235, 0.85);
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
             backdrop-filter: blur(4px);
         }
         h1 {
-            color: #4a5568;
+            color: #d81b60;
             margin-bottom: 20px;
             text-align: center;
             font-size: 32px;
@@ -272,7 +272,7 @@
             
             <div class="button-container">
                 <button id="prevButton">❮ Anterior</button>
-                <button id="playButton">▶️ Reproducir</button>
+                <button id="playButton">⏸️ Pausar</button>
                 <button id="stopButton">⏹️ Detener</button>
                 <button id="nextButton">Siguiente ❯</button>
             </div>
@@ -369,6 +369,9 @@
                     setTimeout(() => {
                         galleryScreen.style.opacity = '1';
                         loadImage();
+                        // Iniciar presentación automática y música al abrir la carta
+                        startPresentation();
+                        playMusic();
                     }, 100);
                 }, 1000);
             });
