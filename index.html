@@ -47,8 +47,10 @@
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             padding: 10px;
+            min-height: 200px;
             width: auto;
-            transition: all 0.5s ease;
+            max-width: 90%;
+            transition: all 0.8s ease;
         }
         .gallery-image {
             max-height: 380px;
@@ -78,8 +80,6 @@
             padding: 15px 25px;
             background-color: #fff0f5;
             border-left: 4px solid #E91E63;
-            margin-top: 20px;
-            text-align: center;
         }
         .button-container {
             display: flex;
@@ -234,33 +234,6 @@
             opacity: 0;
             transition: opacity 1.5s ease;
         }
-        
-        /* Corazón final animado */
-        .final-heart-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .final-heart {
-            width: 100px;
-            height: 100px;
-            position: relative;
-            animation: heartbeat 1.5s ease-in-out infinite, grow 3s ease-in-out forwards;
-            margin-bottom: 20px;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.1); }
-            50% { transform: scale(1); }
-            75% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        @keyframes grow {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.5); }
-        }
     </style>
 </head>
 <body>
@@ -295,15 +268,7 @@
                 <div id="loadingIndicator" class="loading">Cargando imagen</div>
             </div>
             
-            <div id="messageContainer">
-                <!-- Aquí irá el corazón final para el mensaje final -->
-                <div id="finalHeartContainer" class="final-heart-container" style="display: none;">
-                    <svg class="final-heart" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="#E91E63" d="M50 90C47.5 87.5 25 65 10 45C-5 25 5 0 25 0S47.5 15 50 20C52.5 15 65 0 85 0S105 25 90 45C75 65 52.5 87.5 50 90Z" />
-                    </svg>
-                </div>
-                <div id="message" class="message"></div>
-            </div>
+            <div id="message" class="message"></div>
             
             <div class="button-container">
                 <button id="prevButton">❮ Anterior</button>
@@ -382,7 +347,6 @@
             const imageFrame = document.getElementById('imageFrame');
             const loadingIndicator = document.getElementById('loadingIndicator');
             const messageElement = document.getElementById('message');
-            const finalHeartContainer = document.getElementById('finalHeartContainer');
             const prevButton = document.getElementById('prevButton');
             const playButton = document.getElementById('playButton');
             const stopButton = document.getElementById('stopButton');
@@ -436,9 +400,8 @@
                 setTimeout(() => {
                     const imgWidth = galleryImage.offsetWidth;
                     const imgHeight = galleryImage.offsetHeight;
-                    // Ajustamos el tamaño para que sea solo un poco más grande que la imagen
-                    imageFrame.style.width = (imgWidth + 20) + 'px';
-                    imageFrame.style.height = (imgHeight + 20) + 'px';
+                    imageFrame.style.width = (imgWidth + 40) + 'px';
+                    imageFrame.style.height = (imgHeight + 40) + 'px';
                 }, 100);
                 
                 console.log("Imagen cargada exitosamente:", galleryImage.src);
@@ -509,14 +472,12 @@
                     loadingIndicator.style.display = 'none';
                     galleryImage.style.display = 'none';
                     imageFrame.style.display = 'none';
-                    finalHeartContainer.style.display = 'flex';
                     fadeInMessage(mensajeFinal, 0, true);
                 } else {
                     const item = recuerdos[currentIndex];
                     loadingIndicator.style.display = 'block';
                     galleryImage.style.display = 'none';
                     imageFrame.style.display = 'flex';
-                    finalHeartContainer.style.display = 'none';
                     
                     console.log("Cargando imagen:", item.imagen);
                     galleryImage.src = item.imagen;
