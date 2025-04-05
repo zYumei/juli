@@ -31,10 +31,14 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .gallery-image {
-            max-height: 400px;
-            max-width: 600px;
+            max-height: 380px;
+            max-width: 580px;
             object-fit: contain;
             transition: opacity 0.5s ease;
         }
@@ -45,6 +49,10 @@
             margin: 20px 0;
             min-height: 60px;
             color: #333333;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .final-message {
             font-size: 22px;
@@ -54,6 +62,7 @@
         .button-container {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
             margin: 20px 0;
         }
@@ -65,13 +74,31 @@
             color: white;
             border: none;
             border-radius: 4px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
         }
         button:hover {
             background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
         }
         .music-controls {
             margin: 10px 0;
+        }
+        /* Añadimos un indicador de carga para las imágenes */
+        .loading {
+            font-size: 18px;
+            color: #666;
+        }
+        /* Efecto de pulsación para los botones */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
@@ -81,6 +108,7 @@
         
         <div class="image-frame">
             <img id="galleryImage" class="gallery-image" src="" alt="Recuerdo">
+            <div id="loadingIndicator" class="loading">Cargando imagen...</div>
         </div>
         
         <div id="message" class="message"></div>
@@ -93,12 +121,17 @@
         </div>
         
         <div class="music-controls">
-            <button id="musicButton">Pausar música</button>
+            <button id="musicButton">Reproducir música</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la ruta base de la URL actual
+            const baseURL = window.location.pathname.split('/').slice(0, -1).join('/') + '/';
+            console.log("Ruta base:", baseURL);
+            
+            // Para GitHub Pages, ajustamos las rutas según la estructura del repositorio
             const recuerdos = [
                 {
                     imagen: "foto_mac.jpg",
@@ -128,9 +161,10 @@
             let showingFinal = false;
             let presentationActive = false;
             let presentationTimeout = null;
-            let musicPlaying = true;
+            let musicPlaying = false;
 
             const galleryImage = document.getElementById('galleryImage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
             const messageElement = document.getElementById('message');
             const prevButton = document.getElementById('prevButton');
             const playButton = document.getElementById('playButton');
@@ -138,27 +172,58 @@
             const nextButton = document.getElementById('nextButton');
             const musicButton = document.getElementById('musicButton');
 
+            // Configurar indicador de carga para la imagen
+            galleryImage.onload = function() {
+                loadingIndicator.style.display = 'none';
+                galleryImage.style.display = 'block';
+            };
+            
+            galleryImage.onerror = function() {
+                loadingIndicator.textContent = "Error al cargar la imagen. Verificando ruta...";
+                console.error("Error al cargar:", galleryImage.src);
+                // Intentar registrar posibles rutas para ayudar a depurar
+                console.log("Intentando rutas alternativas:");
+                console.log("1. Directa:", recuerdos[currentIndex].imagen);
+                console.log("2. Con ruta base:", baseURL + recuerdos[currentIndex].imagen);
+            };
+
             const backgroundMusic = new Audio('musica_fondo.mp3');
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.5;
-
-            try {
-                backgroundMusic.play().catch(() => {
-                    musicPlaying = false;
-                    musicButton.textContent = 'Reproducir música';
-                });
-            } catch (e) {
-                console.log('Error al reproducir la música:', e);
-            }
+            
+            // Manejar eventos de audio para depuración
+            backgroundMusic.addEventListener('play', function() {
+                console.log("Reproducción de música iniciada");
+                musicPlaying = true;
+                musicButton.textContent = 'Pausar música';
+            });
+            
+            backgroundMusic.addEventListener('error', function(e) {
+                console.error("Error al cargar la música:", e);
+                musicButton.textContent = 'Error de música';
+            });
 
             function loadImage() {
                 if (showingFinal) {
-                    galleryImage.style.opacity = 0;
+                    loadingIndicator.style.display = 'none';
+                    galleryImage.style.display = 'none';
                     fadeInMessage(mensajeFinal, 0, true);
                 } else {
                     const item = recuerdos[currentIndex];
+                    loadingIndicator.style.display = 'block';
+                    galleryImage.style.display = 'none';
+                    
+                    // Usar la ruta directa de la imagen
                     galleryImage.src = item.imagen;
-                    galleryImage.style.opacity = 1;
+                    
+                    // También probamos con console.log para depuración
+                    console.log("Cargando imagen:", galleryImage.src);
+                    
+                    galleryImage.style.opacity = 0;
+                    setTimeout(() => {
+                        galleryImage.style.opacity = 1;
+                    }, 100);
+                    
                     fadeInMessage(item.mensaje, 0, false);
                 }
             }
@@ -215,6 +280,7 @@
             function startPresentation() {
                 presentationActive = true;
                 playButton.textContent = 'Pausar';
+                playButton.classList.add('pulse');
                 showNextInPresentation();
             }
 
@@ -228,6 +294,7 @@
             function stopPresentation() {
                 presentationActive = false;
                 playButton.textContent = 'Reproducir';
+                playButton.classList.remove('pulse');
                 if (presentationTimeout) {
                     clearTimeout(presentationTimeout);
                     presentationTimeout = null;
@@ -235,14 +302,26 @@
             }
 
             function toggleMusic() {
-                if (musicPlaying) {
-                    backgroundMusic.pause();
-                    musicButton.textContent = 'Reproducir música';
-                    musicPlaying = false;
-                } else {
-                    backgroundMusic.play();
-                    musicButton.textContent = 'Pausar música';
-                    musicPlaying = true;
+                try {
+                    if (musicPlaying) {
+                        backgroundMusic.pause();
+                        musicButton.textContent = 'Reproducir música';
+                        musicPlaying = false;
+                    } else {
+                        // Intentar iniciar música con interacción del usuario
+                        const playPromise = backgroundMusic.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                musicButton.textContent = 'Pausar música';
+                                musicPlaying = true;
+                            }).catch(error => {
+                                console.error("Error al reproducir:", error);
+                                musicButton.textContent = 'Error de música';
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error al manejar la música:', e);
                 }
             }
 
@@ -260,7 +339,13 @@
             stopButton.addEventListener('click', stopPresentation);
             musicButton.addEventListener('click', toggleMusic);
 
-            loadImage();
+            // Comenzar cargando la primera imagen con un pequeño retraso
+            // para asegurar que todo está listo
+            setTimeout(loadImage, 300);
+            
+            // Logs de depuración iniciales
+            console.log("Imágenes en la galería:", recuerdos.length);
+            console.log("Primera imagen:", recuerdos[0].imagen);
         });
     </script>
 </body>
