@@ -48,9 +48,10 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             padding: 10px;
             min-height: 200px;
-            width: auto;
-            max-width: 90%;
+            width: 90%;
+            max-width: 600px;
             transition: all 0.8s ease;
+            position: relative;
         }
         .gallery-image {
             max-height: 380px;
@@ -68,9 +69,10 @@
             background-color: #fff0f5;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            max-width: fit-content;
             display: inline-block;
             min-width: 200px;
+            width: auto;
+            max-width: 90%;
             transition: all 0.8s ease;
         }
         .final-message {
@@ -80,6 +82,13 @@
             padding: 15px 25px;
             background-color: #fff0f5;
             border-left: 4px solid #E91E63;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .heart-container {
+            text-align: center;
+            margin-top: 10px;
+            display: none;
         }
         .button-container {
             display: flex;
@@ -245,9 +254,10 @@
         }
         .growing-heart {
             display: inline-block;
-            margin-left: 10px;
-            font-size: 1.2em;
+            font-size: 60px;
             animation: growHeartbeat 2s ease-in-out infinite;
+            color: #E91E63;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -284,10 +294,13 @@
             </div>
             
             <div id="message" class="message"></div>
+            <div id="heartContainer" class="heart-container">
+                <div class="growing-heart">💗</div>
+            </div>
             
             <div class="button-container">
                 <button id="prevButton">❮ Anterior</button>
-                <button id="playButton">⏸️ Pausar</button>
+                <button id="playButton">▶️ Reproducir</button>
                 <button id="stopButton">⏹️ Detener</button>
                 <button id="nextButton">Siguiente ❯</button>
             </div>
@@ -304,6 +317,7 @@
             const initialScreen = document.getElementById('initialScreen');
             const galleryScreen = document.getElementById('galleryScreen');
             const startButton = document.getElementById('startButton');
+            const heartContainer = document.getElementById('heartContainer');
             
             // Información de depuración
             console.log("URL actual:", window.location.href);
@@ -357,6 +371,7 @@
             let presentationActive = false;
             let presentationTimeout = null;
             let musicPlaying = false;
+            let firstLoad = true;
 
             const galleryImage = document.getElementById('galleryImage');
             const imageFrame = document.getElementById('imageFrame');
@@ -383,7 +398,12 @@
                     
                     setTimeout(() => {
                         galleryScreen.style.opacity = '1';
+                        // Iniciar con la primera imagen directamente (corrige el salto de la primera imagen)
+                        currentIndex = 0;
+                        showingFinal = false;
+                        firstLoad = true;
                         loadImage();
+                        
                         // Iniciar presentación automática y música al abrir la carta
                         startPresentation();
                         playMusic();
@@ -411,16 +431,31 @@
                 loadingIndicator.style.display = 'none';
                 galleryImage.style.display = 'block';
                 
-                // Ajustar el tamaño del frame de imagen al contenido
+                // Ajustar el tamaño del frame de imagen al contenido (mejorado)
                 setTimeout(() => {
-                    const imgWidth = galleryImage.offsetWidth;
-                    const imgHeight = galleryImage.offsetHeight;
-                    imageFrame.style.width = (imgWidth + 40) + 'px';
-                    imageFrame.style.height = (imgHeight + 40) + 'px';
+                    adjustImageFrame();
                 }, 100);
                 
                 console.log("Imagen cargada exitosamente:", galleryImage.src);
             };
+            
+            function adjustImageFrame() {
+                // Asegurar que el frame se ajuste correctamente al contenido de la imagen
+                const imgWidth = galleryImage.naturalWidth;
+                const imgHeight = galleryImage.naturalHeight;
+                
+                // Establecer dimensiones mínimas para el frame
+                let frameWidth = Math.min(imgWidth + 40, 600);
+                let frameHeight = Math.min(imgHeight + 40, 420);
+                
+                // Asegurar dimensiones mínimas para el marco
+                frameWidth = Math.max(frameWidth, 300);
+                frameHeight = Math.max(frameHeight, 200);
+                
+                // Aplicar las dimensiones calculadas
+                imageFrame.style.width = frameWidth + 'px';
+                imageFrame.style.height = frameHeight + 'px';
+            }
             
             galleryImage.onerror = function() {
                 loadingIndicator.textContent = "Error al cargar la imagen. Probando rutas alternativas";
@@ -488,7 +523,9 @@
                     galleryImage.style.display = 'none';
                     imageFrame.style.display = 'none';
                     fadeInMessage(mensajeFinal, 0, true);
+                    heartContainer.style.display = 'block'; // Mostrar el corazón con el mensaje final
                 } else {
+                    heartContainer.style.display = 'none'; // Ocultar el corazón para imágenes normales
                     const item = recuerdos[currentIndex];
                     loadingIndicator.style.display = 'block';
                     galleryImage.style.display = 'none';
@@ -522,16 +559,10 @@
                     }, 50); // Más lento para la transición del texto
                 } else {
                     // Ajustar el ancho del mensaje al contenido
-                    const messageWidth = messageElement.scrollWidth;
-                    messageElement.style.width = (messageWidth + 40) + 'px';
-                    
-                    // Si es el mensaje final, agregar el corazón creciente
-                    if (isFinal) {
-                        const heartSpan = document.createElement('span');
-                        heartSpan.className = 'growing-heart';
-                        heartSpan.textContent = '💗';
-                        messageElement.appendChild(heartSpan);
-                    }
+                    setTimeout(() => {
+                        const messageWidth = messageElement.scrollWidth;
+                        messageElement.style.width = (messageWidth + 40) + 'px';
+                    }, 50);
                 }
             }
 
@@ -580,7 +611,14 @@
                 playButton.textContent = '⏸️ Pausar';
                 playButton.classList.add('pulse');
                 playButton.style.backgroundColor = '#03a9f4';
-                showNextInPresentation();
+                
+                // Si es la primera carga, no avanzar automáticamente
+                if (firstLoad) {
+                    firstLoad = false;
+                    presentationTimeout = setTimeout(showNextInPresentation, 7000);
+                } else {
+                    showNextInPresentation();
+                }
             }
 
             function showNextInPresentation() {
