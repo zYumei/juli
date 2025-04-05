@@ -6,92 +6,148 @@
     <title>Galería de recuerdos</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
         .container {
             max-width: 800px;
-            width: 100%;
+            width: 95%;
             margin: 20px auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        h1 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .image-frame {
-            height: 400px;
-            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid #ddd;
             background-color: #fff;
-            border-radius: 8px;
+            border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+            min-height: 200px;
+            width: auto;
+            max-width: 90%;
+            transition: all 0.3s ease;
         }
         .gallery-image {
             max-height: 380px;
-            max-width: 580px;
+            max-width: 100%;
+            border-radius: 8px;
             object-fit: contain;
             transition: opacity 0.5s ease;
         }
         .message {
             font-size: 18px;
-            max-width: 600px;
             text-align: center;
             margin: 20px 0;
-            min-height: 60px;
-            color: #333333;
-            padding: 10px;
+            color: #2d3748;
+            padding: 12px 20px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            max-width: fit-content;
+            display: inline-block;
+            min-width: 200px;
+            transition: all 0.3s ease;
         }
         .final-message {
             font-size: 22px;
             font-weight: bold;
             color: #E91E63;
+            padding: 15px 25px;
+            background-color: #fff9f9;
+            border-left: 4px solid #E91E63;
         }
         .button-container {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             margin: 20px 0;
         }
         button {
-            padding: 8px 16px;
+            padding: 10px 18px;
             font-size: 16px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 4px;
-            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: 500;
         }
         button:hover {
             background-color: #45a049;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
         button:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .music-controls {
-            margin: 10px 0;
+            margin: 15px 0;
         }
-        /* Añadimos un indicador de carga para las imágenes */
+        #musicButton {
+            background-color: #7c4dff;
+        }
+        #musicButton:hover {
+            background-color: #6a3de8;
+        }
+        #playButton {
+            background-color: #2196F3;
+        }
+        #playButton:hover {
+            background-color: #0d8bf2;
+        }
+        #stopButton {
+            background-color: #f44336;
+        }
+        #stopButton:hover {
+            background-color: #e53935;
+        }
         .loading {
             font-size: 18px;
             color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        /* Efecto de pulsación para los botones */
+        .loading::after {
+            content: "...";
+            animation: dots 1.5s infinite;
+            width: 24px;
+            text-align: left;
+        }
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -100,28 +156,71 @@
         .pulse {
             animation: pulse 2s infinite;
         }
+        /* Animación para aparecer elementos suavemente */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        /* Corazones flotantes como decoración */
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+            animation: float 15s linear infinite;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container fade-in">
         <h1>Galería de recuerdos</h1>
         
-        <div class="image-frame">
+        <div class="image-frame" id="imageFrame">
             <img id="galleryImage" class="gallery-image" src="" alt="Recuerdo">
-            <div id="loadingIndicator" class="loading">Cargando imagen...</div>
+            <div id="loadingIndicator" class="loading">Cargando imagen</div>
         </div>
         
         <div id="message" class="message"></div>
         
         <div class="button-container">
-            <button id="prevButton">Anterior</button>
-            <button id="playButton">Reproducir</button>
-            <button id="stopButton">Detener</button>
-            <button id="nextButton">Siguiente</button>
+            <button id="prevButton">❮ Anterior</button>
+            <button id="playButton">▶️ Reproducir</button>
+            <button id="stopButton">⏹️ Detener</button>
+            <button id="nextButton">Siguiente ❯</button>
         </div>
         
         <div class="music-controls">
-            <button id="musicButton">Reproducir música</button>
+            <button id="musicButton">🎵 Reproducir música</button>
         </div>
     </div>
 
@@ -181,6 +280,7 @@
             let musicPlaying = false;
 
             const galleryImage = document.getElementById('galleryImage');
+            const imageFrame = document.getElementById('imageFrame');
             const loadingIndicator = document.getElementById('loadingIndicator');
             const messageElement = document.getElementById('message');
             const prevButton = document.getElementById('prevButton');
@@ -188,16 +288,44 @@
             const stopButton = document.getElementById('stopButton');
             const nextButton = document.getElementById('nextButton');
             const musicButton = document.getElementById('musicButton');
+            const heartsContainer = document.getElementById('hearts');
+
+            // Crear corazones flotantes
+            createFloatingHearts();
+            
+            function createFloatingHearts() {
+                const colors = ['#ff6b6b', '#f06292', '#ec407a', '#e91e63', '#d81b60'];
+                for (let i = 0; i < 15; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = '❤';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                    heart.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                    heart.style.animationDelay = (Math.random() * 10) + 's';
+                    heartsContainer.appendChild(heart);
+                }
+            }
 
             // Configurar indicador de carga para la imagen
             galleryImage.onload = function() {
                 loadingIndicator.style.display = 'none';
                 galleryImage.style.display = 'block';
+                
+                // Ajustar el tamaño del frame de imagen al contenido
+                setTimeout(() => {
+                    const imgWidth = galleryImage.offsetWidth;
+                    const imgHeight = galleryImage.offsetHeight;
+                    imageFrame.style.width = (imgWidth + 40) + 'px';
+                    imageFrame.style.height = (imgHeight + 40) + 'px';
+                }, 50);
+                
                 console.log("Imagen cargada exitosamente:", galleryImage.src);
             };
             
             galleryImage.onerror = function() {
-                loadingIndicator.textContent = "Error al cargar la imagen. Probando rutas alternativas...";
+                loadingIndicator.textContent = "Error al cargar la imagen. Probando rutas alternativas";
                 console.error("Error al cargar:", galleryImage.src);
                 
                 // Intentar con rutas alternativas
@@ -227,7 +355,14 @@
             backgroundMusic.addEventListener('play', function() {
                 console.log("Reproducción de música iniciada");
                 musicPlaying = true;
-                musicButton.textContent = 'Pausar música';
+                musicButton.textContent = '🔇 Pausar música';
+                musicButton.style.backgroundColor = '#9c27b0';
+            });
+            
+            backgroundMusic.addEventListener('pause', function() {
+                musicPlaying = false;
+                musicButton.textContent = '🎵 Reproducir música';
+                musicButton.style.backgroundColor = '#7c4dff';
             });
             
             backgroundMusic.addEventListener('error', function(e) {
@@ -246,18 +381,20 @@
                     backgroundMusic.src = musicName;
                 }
                 
-                musicButton.textContent = 'Reintentar música';
+                musicButton.textContent = '🔄 Reintentar música';
             });
 
             function loadImage() {
                 if (showingFinal) {
                     loadingIndicator.style.display = 'none';
                     galleryImage.style.display = 'none';
+                    imageFrame.style.display = 'none';
                     fadeInMessage(mensajeFinal, 0, true);
                 } else {
                     const item = recuerdos[currentIndex];
                     loadingIndicator.style.display = 'block';
                     galleryImage.style.display = 'none';
+                    imageFrame.style.display = 'flex';
                     
                     console.log("Cargando imagen:", item.imagen);
                     galleryImage.src = item.imagen;
@@ -272,15 +409,23 @@
             }
 
             function fadeInMessage(completeMessage, index, isFinal) {
+                if (index === 0) {
+                    messageElement.textContent = "";
+                    messageElement.style.width = "auto";
+                    messageElement.className = isFinal ? 'message final-message' : 'message';
+                }
+                
                 if (index <= completeMessage.length) {
                     const partialMessage = completeMessage.substring(0, index);
                     messageElement.textContent = partialMessage;
 
-                    messageElement.className = isFinal ? 'message final-message' : 'message';
-
                     setTimeout(() => {
                         fadeInMessage(completeMessage, index + 1, isFinal);
                     }, 30);
+                } else {
+                    // Ajustar el ancho del mensaje al contenido
+                    const messageWidth = messageElement.scrollWidth;
+                    messageElement.style.width = (messageWidth + 40) + 'px';
                 }
             }
 
@@ -317,13 +462,18 @@
                     stopPresentation();
                 } else {
                     startPresentation();
+                    // Reproducir música automáticamente cuando se inicia la presentación
+                    if (!musicPlaying) {
+                        playMusic();
+                    }
                 }
             }
 
             function startPresentation() {
                 presentationActive = true;
-                playButton.textContent = 'Pausar';
+                playButton.textContent = '⏸️ Pausar';
                 playButton.classList.add('pulse');
+                playButton.style.backgroundColor = '#03a9f4';
                 showNextInPresentation();
             }
 
@@ -336,32 +486,46 @@
 
             function stopPresentation() {
                 presentationActive = false;
-                playButton.textContent = 'Reproducir';
+                playButton.textContent = '▶️ Reproducir';
                 playButton.classList.remove('pulse');
+                playButton.style.backgroundColor = '#2196F3';
                 if (presentationTimeout) {
                     clearTimeout(presentationTimeout);
                     presentationTimeout = null;
                 }
             }
 
+            function playMusic() {
+                try {
+                    const playPromise = backgroundMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            musicPlaying = true;
+                            musicButton.textContent = '🔇 Pausar música';
+                            musicButton.style.backgroundColor = '#9c27b0';
+                        }).catch(error => {
+                            console.error("Error al reproducir:", error);
+                            musicButton.textContent = '🔄 Error de música';
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error al reproducir música:', e);
+                }
+            }
+
+            function pauseMusic() {
+                backgroundMusic.pause();
+                musicPlaying = false;
+                musicButton.textContent = '🎵 Reproducir música';
+                musicButton.style.backgroundColor = '#7c4dff';
+            }
+
             function toggleMusic() {
                 try {
                     if (musicPlaying) {
-                        backgroundMusic.pause();
-                        musicButton.textContent = 'Reproducir música';
-                        musicPlaying = false;
+                        pauseMusic();
                     } else {
-                        // Intentar iniciar música con interacción del usuario
-                        const playPromise = backgroundMusic.play();
-                        if (playPromise !== undefined) {
-                            playPromise.then(() => {
-                                musicButton.textContent = 'Pausar música';
-                                musicPlaying = true;
-                            }).catch(error => {
-                                console.error("Error al reproducir:", error);
-                                musicButton.textContent = 'Error de música';
-                            });
-                        }
+                        playMusic();
                     }
                 } catch (e) {
                     console.error('Error al manejar la música:', e);
