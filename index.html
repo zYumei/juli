@@ -100,14 +100,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Galería de imágenes con mensajes
-            const gallery = [
+            const recuerdos = [
     {
         imagen: "foto_mac.jpg",
         mensaje: "Nuestra primer foto juntos y en la primer salida donde te di un beso"
     },
     {
         imagen: "manitos.jpg",
-        mensaje: "nuestras manitos juntas por primera vez"
+        mensaje: "Nuestras manitos juntas por primera vez"
     },
     {
         imagen: "mano_mordida.jpg",
@@ -115,13 +115,23 @@
     },
     {
         imagen: "pulsera.jpg",
-        mensaje: "la mejor pulsera que me regalaste, la que me acompaña siempre"
+        mensaje: "La mejor pulsera que me regalaste, la que me acompaña siempre"
     },
     {
         imagen: "ultima_foto.jpg",
-        mensaje: "nuestra última foto juntos, pero no la última que nos vamos a sacar"
+        mensaje: "Nuestra última foto juntos, pero no la última que nos vamos a sacar"
     }
 ];
+
+let indice = 0;
+
+function mostrarRecuerdo() {
+    document.getElementById("imagen").src = recuerdos[indice].imagen;
+    document.getElementById("mensaje").textContent = recuerdos[indice].mensaje;
+}
+
+// Llamalo al cargar:
+mostrarRecuerdo();
             // Mensaje final
             const mensajeFinal = "No importa la distancia, ni lo que pase, siempre vas a ser mi persona favorita. —Eli";
 
