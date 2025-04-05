@@ -99,50 +99,37 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Galería de imágenes con mensajes
             const recuerdos = [
-    {
-        imagen: "foto_mac.jpg",
-        mensaje: "Nuestra primer foto juntos y en la primer salida donde te di un beso"
-    },
-    {
-        imagen: "manitos.jpg",
-        mensaje: "Nuestras manitos juntas por primera vez"
-    },
-    {
-        imagen: "mano_mordida.jpg",
-        mensaje: "Vos y tus marquitas de amor que tanto me gustan"
-    },
-    {
-        imagen: "pulsera.jpg",
-        mensaje: "La mejor pulsera que me regalaste, la que me acompaña siempre"
-    },
-    {
-        imagen: "ultima_foto.jpg",
-        mensaje: "Nuestra última foto juntos, pero no la última que nos vamos a sacar"
-    }
-];
+                {
+                    imagen: "foto_mac.jpg",
+                    mensaje: "Nuestra primer foto juntos y en la primer salida donde te di un beso"
+                },
+                {
+                    imagen: "manitos.jpg",
+                    mensaje: "Nuestras manitos juntas por primera vez"
+                },
+                {
+                    imagen: "mano_mordida.jpg",
+                    mensaje: "Vos y tus marquitas de amor que tanto me gustan"
+                },
+                {
+                    imagen: "pulsera.jpg",
+                    mensaje: "La mejor pulsera que me regalaste, la que me acompaña siempre"
+                },
+                {
+                    imagen: "ultima_foto.jpg",
+                    mensaje: "Nuestra última foto juntos, pero no la última que nos vamos a sacar"
+                }
+            ];
 
-let indice = 0;
-
-function mostrarRecuerdo() {
-    document.getElementById("imagen").src = recuerdos[indice].imagen;
-    document.getElementById("mensaje").textContent = recuerdos[indice].mensaje;
-}
-
-// Llamalo al cargar:
-mostrarRecuerdo();
-            // Mensaje final
             const mensajeFinal = "No importa la distancia, ni lo que pase, siempre vas a ser mi persona favorita. —Eli";
 
-            // Variables de control
             let currentIndex = 0;
             let showingFinal = false;
             let presentationActive = false;
             let presentationTimeout = null;
             let musicPlaying = true;
-            
-            // Elementos del DOM
+
             const galleryImage = document.getElementById('galleryImage');
             const messageElement = document.getElementById('message');
             const prevButton = document.getElementById('prevButton');
@@ -150,101 +137,73 @@ mostrarRecuerdo();
             const stopButton = document.getElementById('stopButton');
             const nextButton = document.getElementById('nextButton');
             const musicButton = document.getElementById('musicButton');
-            
-            // Audio
+
             const backgroundMusic = new Audio('musica_fondo.mp3');
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.5;
-            
-            // Intentar reproducir música (puede ser bloqueado por políticas del navegador)
+
             try {
-                backgroundMusic.play().catch(e => {
-                    console.log('La reproducción automática fue bloqueada. Haga clic en el botón de música para comenzar.');
+                backgroundMusic.play().catch(() => {
                     musicPlaying = false;
                     musicButton.textContent = 'Reproducir música';
                 });
             } catch (e) {
                 console.log('Error al reproducir la música:', e);
             }
-            
-            // Función para cargar la imagen actual
+
             function loadImage() {
                 if (showingFinal) {
-                    // Mostrar mensaje final sin imagen
                     galleryImage.style.opacity = 0;
                     fadeInMessage(mensajeFinal, 0, true);
                 } else {
-                    // Mostrar imagen y mensaje normal
-                    const item = gallery[currentIndex];
+                    const item = recuerdos[currentIndex];
                     galleryImage.src = item.imagen;
                     galleryImage.style.opacity = 1;
-                    
-                    // Mostrar el mensaje con efecto de typing
                     fadeInMessage(item.mensaje, 0, false);
                 }
             }
-            
-            // Efecto de fade para el mensaje (letra por letra)
+
             function fadeInMessage(completeMessage, index, isFinal) {
                 if (index <= completeMessage.length) {
                     const partialMessage = completeMessage.substring(0, index);
                     messageElement.textContent = partialMessage;
-                    
-                    if (isFinal) {
-                        messageElement.className = 'message final-message';
-                    } else {
-                        messageElement.className = 'message';
-                    }
-                    
+
+                    messageElement.className = isFinal ? 'message final-message' : 'message';
+
                     setTimeout(() => {
                         fadeInMessage(completeMessage, index + 1, isFinal);
                     }, 30);
                 }
             }
-            
-            // Función para mostrar la siguiente imagen
+
             function nextImage() {
                 if (showingFinal) {
-                    // Si estamos en el mensaje final, volver al inicio
                     showingFinal = false;
                     currentIndex = 0;
-                } else if (currentIndex === gallery.length - 1) {
-                    // Si es la última imagen, mostrar mensaje final
+                } else if (currentIndex === recuerdos.length - 1) {
                     showingFinal = true;
                 } else {
-                    // Avanzar a la siguiente imagen
                     currentIndex++;
                 }
-                
-                // Efecto de transición
+
                 galleryImage.style.opacity = 0;
-                setTimeout(() => {
-                    loadImage();
-                }, 500);
+                setTimeout(loadImage, 500);
             }
-            
-            // Función para mostrar la imagen anterior
+
             function prevImage() {
                 if (showingFinal) {
-                    // Si estamos en el mensaje final, ir a la última imagen
                     showingFinal = false;
-                    currentIndex = gallery.length - 1;
+                    currentIndex = recuerdos.length - 1;
                 } else if (currentIndex === 0) {
-                    // Si es la primera imagen, ir a la última
-                    currentIndex = gallery.length - 1;
+                    currentIndex = recuerdos.length - 1;
                 } else {
-                    // Retroceder a la imagen anterior
                     currentIndex--;
                 }
-                
-                // Efecto de transición
+
                 galleryImage.style.opacity = 0;
-                setTimeout(() => {
-                    loadImage();
-                }, 500);
+                setTimeout(loadImage, 500);
             }
-            
-            // Función para iniciar/pausar la presentación
+
             function togglePresentation() {
                 if (presentationActive) {
                     stopPresentation();
@@ -252,23 +211,20 @@ mostrarRecuerdo();
                     startPresentation();
                 }
             }
-            
-            // Iniciar presentación
+
             function startPresentation() {
                 presentationActive = true;
                 playButton.textContent = 'Pausar';
                 showNextInPresentation();
             }
-            
-            // Mostrar siguiente en la presentación
+
             function showNextInPresentation() {
                 if (presentationActive) {
                     nextImage();
                     presentationTimeout = setTimeout(showNextInPresentation, 5000);
                 }
             }
-            
-            // Detener presentación
+
             function stopPresentation() {
                 presentationActive = false;
                 playButton.textContent = 'Reproducir';
@@ -277,8 +233,7 @@ mostrarRecuerdo();
                     presentationTimeout = null;
                 }
             }
-            
-            // Pausar/Reanudar música
+
             function toggleMusic() {
                 if (musicPlaying) {
                     backgroundMusic.pause();
@@ -290,23 +245,21 @@ mostrarRecuerdo();
                     musicPlaying = true;
                 }
             }
-            
-            // Event listeners
+
             prevButton.addEventListener('click', () => {
                 stopPresentation();
                 prevImage();
             });
-            
+
             nextButton.addEventListener('click', () => {
                 stopPresentation();
                 nextImage();
             });
-            
+
             playButton.addEventListener('click', togglePresentation);
             stopButton.addEventListener('click', stopPresentation);
             musicButton.addEventListener('click', toggleMusic);
-            
-            // Cargar la primera imagen al iniciar
+
             loadImage();
         });
     </script>
