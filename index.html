@@ -42,22 +42,22 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid #ddd;
-            background-color: #fff;
+            border: 1px solid #ffb6c1;
+            background-color: #fff0f5;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             padding: 10px;
             min-height: 200px;
             width: auto;
             max-width: 90%;
-            transition: all 0.3s ease;
+            transition: all 0.8s ease;
         }
         .gallery-image {
             max-height: 380px;
             max-width: 100%;
             border-radius: 8px;
             object-fit: contain;
-            transition: opacity 0.5s ease;
+            transition: opacity 1.2s ease;
         }
         .message {
             font-size: 18px;
@@ -65,20 +65,20 @@
             margin: 20px 0;
             color: #2d3748;
             padding: 12px 20px;
-            background-color: #fff;
+            background-color: #fff0f5;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             max-width: fit-content;
             display: inline-block;
             min-width: 200px;
-            transition: all 0.3s ease;
+            transition: all 0.8s ease;
         }
         .final-message {
             font-size: 22px;
             font-weight: bold;
             color: #E91E63;
             padding: 15px 25px;
-            background-color: #fff9f9;
+            background-color: #fff0f5;
             border-left: 4px solid #E91E63;
         }
         .button-container {
@@ -96,7 +96,7 @@
             color: white;
             border: none;
             border-radius: 25px;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             font-weight: 500;
         }
@@ -162,7 +162,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+            animation: fadeIn 1.5s ease-out forwards;
         }
         /* Corazones flotantes como decoración */
         .hearts {
@@ -179,7 +179,7 @@
             width: 20px;
             height: 20px;
             opacity: 0.6;
-            animation: float 15s linear infinite;
+            animation: float 20s linear infinite;
         }
         @keyframes float {
             0% {
@@ -197,35 +197,99 @@
                 opacity: 0;
             }
         }
+        
+        /* Estilos para la pantalla inicial */
+        #initialScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            transition: all 1s ease;
+        }
+        .love-letter {
+            max-width: 180px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 5px 15px rgba(233, 30, 99, 0.3));
+            animation: float-letter 3s ease-in-out infinite;
+        }
+        @keyframes float-letter {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        #startButton {
+            font-size: 20px;
+            padding: 12px 28px;
+            background-color: #E91E63;
+            margin-top: 20px;
+        }
+        #startButton:hover {
+            background-color: #d81b60;
+        }
+        #galleryScreen {
+            display: none;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
     </style>
 </head>
 <body>
     <div class="hearts" id="hearts"></div>
     
     <div class="container fade-in">
-        <h1>Galería de recuerdos</h1>
-        
-        <div class="image-frame" id="imageFrame">
-            <img id="galleryImage" class="gallery-image" src="" alt="Recuerdo">
-            <div id="loadingIndicator" class="loading">Cargando imagen</div>
+        <!-- Pantalla inicial -->
+        <div id="initialScreen">
+            <h1>Galería de recuerdos</h1>
+            
+            <svg class="love-letter" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#FFF0F5" d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48z"/>
+                <path fill="#FFCAD4" d="M464 64H48c-26.51 0-48 21.49-48 48l240 112L480 112c0-26.51-21.49-48-48-48z"/>
+                <path fill="#FF94A4" d="M256 266.698L0 112C0 85.49 21.49 64 48 64h416c26.51 0 48 21.49 48 48L256 266.698z"/>
+                <path fill="#E91E63" d="M256 224L30 64h452L256 224z"/>
+                <path fill="#F06292" d="M28.475 65.977C27.956 66.94 30 68.5 30 64h452L256 224 28.475 65.977z"/>
+                <path fill="#E91E63" d="M256 224l-50-25-50 25V154l100 70z"/>
+                <path fill="#E91E63" d="M256 224l50-25 50 25V154l-100 70z"/>
+            </svg>
+            
+            <p style="font-size: 18px; color: #d81b60;">Una colección especial de momentos juntos</p>
+            
+            <button id="startButton">❤️ Abrir carta</button>
         </div>
         
-        <div id="message" class="message"></div>
-        
-        <div class="button-container">
-            <button id="prevButton">❮ Anterior</button>
-            <button id="playButton">▶️ Reproducir</button>
-            <button id="stopButton">⏹️ Detener</button>
-            <button id="nextButton">Siguiente ❯</button>
-        </div>
-        
-        <div class="music-controls">
-            <button id="musicButton">🎵 Reproducir música</button>
+        <!-- Pantalla principal de la galería -->
+        <div id="galleryScreen">
+            <h1>Galería de recuerdos</h1>
+            
+            <div class="image-frame" id="imageFrame">
+                <img id="galleryImage" class="gallery-image" src="" alt="Recuerdo">
+                <div id="loadingIndicator" class="loading">Cargando imagen</div>
+            </div>
+            
+            <div id="message" class="message"></div>
+            
+            <div class="button-container">
+                <button id="prevButton">❮ Anterior</button>
+                <button id="playButton">▶️ Reproducir</button>
+                <button id="stopButton">⏹️ Detener</button>
+                <button id="nextButton">Siguiente ❯</button>
+            </div>
+            
+            <div class="music-controls">
+                <button id="musicButton">🎵 Reproducir música</button>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a los elementos de pantalla
+            const initialScreen = document.getElementById('initialScreen');
+            const galleryScreen = document.getElementById('galleryScreen');
+            const startButton = document.getElementById('startButton');
+            
             // Información de depuración
             console.log("URL actual:", window.location.href);
             console.log("Hostname:", window.location.hostname);
@@ -293,6 +357,22 @@
             // Crear corazones flotantes
             createFloatingHearts();
             
+            // Evento para iniciar la galería desde la pantalla inicial
+            startButton.addEventListener('click', function() {
+                initialScreen.style.opacity = '0';
+                setTimeout(() => {
+                    initialScreen.style.display = 'none';
+                    galleryScreen.style.display = 'flex';
+                    galleryScreen.style.flexDirection = 'column';
+                    galleryScreen.style.alignItems = 'center';
+                    
+                    setTimeout(() => {
+                        galleryScreen.style.opacity = '1';
+                        loadImage();
+                    }, 100);
+                }, 1000);
+            });
+            
             function createFloatingHearts() {
                 const colors = ['#ff6b6b', '#f06292', '#ec407a', '#e91e63', '#d81b60'];
                 for (let i = 0; i < 15; i++) {
@@ -319,7 +399,7 @@
                     const imgHeight = galleryImage.offsetHeight;
                     imageFrame.style.width = (imgWidth + 40) + 'px';
                     imageFrame.style.height = (imgHeight + 40) + 'px';
-                }, 50);
+                }, 100);
                 
                 console.log("Imagen cargada exitosamente:", galleryImage.src);
             };
@@ -402,7 +482,7 @@
                     galleryImage.style.opacity = 0;
                     setTimeout(() => {
                         galleryImage.style.opacity = 1;
-                    }, 100);
+                    }, 300);
                     
                     fadeInMessage(item.mensaje, 0, false);
                 }
@@ -421,7 +501,7 @@
 
                     setTimeout(() => {
                         fadeInMessage(completeMessage, index + 1, isFinal);
-                    }, 30);
+                    }, 50); // Más lento para la transición del texto
                 } else {
                     // Ajustar el ancho del mensaje al contenido
                     const messageWidth = messageElement.scrollWidth;
@@ -440,7 +520,7 @@
                 }
 
                 galleryImage.style.opacity = 0;
-                setTimeout(loadImage, 500);
+                setTimeout(loadImage, 800); // Transición más lenta
             }
 
             function prevImage() {
@@ -454,7 +534,7 @@
                 }
 
                 galleryImage.style.opacity = 0;
-                setTimeout(loadImage, 500);
+                setTimeout(loadImage, 800); // Transición más lenta
             }
 
             function togglePresentation() {
@@ -480,7 +560,7 @@
             function showNextInPresentation() {
                 if (presentationActive) {
                     nextImage();
-                    presentationTimeout = setTimeout(showNextInPresentation, 5000);
+                    presentationTimeout = setTimeout(showNextInPresentation, 7000); // Más tiempo entre diapositivas
                 }
             }
 
@@ -545,10 +625,6 @@
             playButton.addEventListener('click', togglePresentation);
             stopButton.addEventListener('click', stopPresentation);
             musicButton.addEventListener('click', toggleMusic);
-
-            // Comenzar cargando la primera imagen con un pequeño retraso
-            // para asegurar que todo está listo
-            setTimeout(loadImage, 300);
         });
     </script>
 </body>
